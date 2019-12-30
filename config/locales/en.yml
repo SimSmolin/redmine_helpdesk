@@ -1,3 +1,5 @@
 en:
   label_support_checkbox: "Send mail to supportclient"
   email_was_send_to_supportclient: "This answer was sent to the supportclient."
+  label_part_check_disable: "Disable sender e-mail check"
+  label_cf_required_disable: "Disable required custom field validation"

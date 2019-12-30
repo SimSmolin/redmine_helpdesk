@@ -1,0 +1,21 @@
+<table>
+  <tbody>
+  <tr>
+    <td><b>Настройки:</b> </td>
+  </tr>
+  <tr>
+    <td>
+      <p>
+        <label><%= l(:label_part_check_disable) %></label>
+        <%= check_box_tag 'settings[part_check_disable]', 1, settings.present? && settings['part_check_disable'] == '1' %>
+        <br />
+<!--        <em><%#= l(:em_my_activity_enable) %></em>-->
+      </p>
+      <p>
+        <label><%= l(:label_cf_required_disable) %></label>
+        <%= check_box_tag 'settings[cf_required_disable]', 1, settings.present? && settings['cf_required_disable'] == '1' %>
+      </p>
+   </td>
+  </tr>
+  </tbody>
+</table>
