@@ -7,7 +7,7 @@ require 'mailer_patch'
 
 Redmine::Plugin.register :redmine_helpdesk do
   name 'Redmine helpdesk plugin'
-  author 'Stefan Husch / Sergey Menikov'
+  author 'Stefan Husch / Sergey Melnikov'
   description 'Redmine helpdesk plugin with SimSmolin features'
   version '0.1.15'
   requires_redmine :version_or_higher => '3.4.0'
