@@ -2,9 +2,10 @@ module RedmineHelpdesk
   module MailerPatch
     def self.included(base) # :nodoc:
       base.send(:include, InstanceMethods)
-      
       base.class_eval do
-        alias_method_chain :issue_edit,  :helpdesk
+        #alias_method_chain :issue_edit,  :helpdesk
+        alias_method :issue_edit_without_helpdesk, :issue_edit
+        alias_method :issue_edit, :issue_edit_with_helpdesk
       end
     end
 
