@@ -139,7 +139,10 @@ module RedmineHelpdesk
         issue.safe_attributes = issue_attributes_from_keywords(issue)
         issue.safe_attributes = {'custom_field_values' => custom_field_values_from_keywords(issue)}
         journal.notes = cleaned_up_text_body
-
+        if Setting.plugin_redmine_helpdesk['receive_mail_issue_status'] &&
+            Setting.plugin_redmine_helpdesk['receive_mail_issue_status'] != '0'
+          issue.status_id = Setting.plugin_redmine_helpdesk['receive_mail_issue_status']
+        end
         # add To and Cc as watchers before saving so the watchers can reply to Redmine
         add_watchers(issue)
         issue.save!(:validate => Setting.plugin_redmine_helpdesk['cf_required_disable']!="1")

@@ -15,6 +15,23 @@
         <label><%= l(:label_cf_required_disable) %></label>
         <%= check_box_tag 'settings[cf_required_disable]', 1, settings.present? && settings['cf_required_disable'] == '1' %>
       </p>
+      <p>
+        <%= content_tag(:label, l(:label_receive_mail_issue_status)) %>
+        <%= menu_statuses = Struct.new(:id, :name)
+          select_tag('settings[receive_mail_issue_status]',
+                     options_from_collection_for_select(
+                        IssueStatus.sorted
+                          .collect { |m| menu_statuses.new(m.id, m.name) }
+                          .insert(0,menu_statuses.new(0, l(:label_no_change_option))),
+                        :id,
+                        :name,
+                        settings['receive_mail_issue_status']),
+                     multiple: false)
+        %>
+        <em class="info">
+          <%= l(:label_default) %>: <%= l(:label_no_change_option) %>
+        </em>
+      </p>
    </td>
   </tr>
   </tbody>
