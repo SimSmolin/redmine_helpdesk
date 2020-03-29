@@ -7,6 +7,7 @@ module RedmineHelpdesk
         alias_method :dispatch_to_default, :dispatch_to_default_with_helpdesk
         alias_method :receive_issue, :receive_issue_with_patch
         alias_method :receive_issue_reply, :receive_issue_reply_with_patch
+        alias_method :get_project_from_receiver_addresses, :get_project_from_receiver_addresses_with_patch
       end
     end
 
@@ -152,6 +153,39 @@ module RedmineHelpdesk
         end
         journal
       end
+
+      def get_project_from_receiver_addresses_with_patch
+        #((Project.all.select {|p| p.custom_field_values[4].to_s.include? ('@krit.pro') })[7].custom_value_for(CustomField.find_by_name('helpdesk-sender-email'))).value # methods.select { |m| m.to_s.include? ('custom') }
+        #     s = CustomField.find_by_name('helpdesk-sender-email')
+        #     sender = p.custom_value_for(s).try(:value) if p.present? && s.present?
+
+        # search for project if filled 'helpdesk-sender-email'
+        [:to, :cc, :bcc].each do |field|
+          header = @email[field]
+          project = Project.all.select do |p|
+            p.custom_value_for(CustomField.find_by_name('helpdesk-sender-email')).to_s.include? (header.to_s)
+          end.first
+          return project if project
+        end
+
+        local, domain = handler_options[:project_from_subaddress].to_s.split("@")
+        return nil unless local && domain
+        local = Regexp.escape(local)
+
+        [:to, :cc, :bcc].each do |field|
+          header = @email[field]
+          next if header.blank? || header.field.blank? || !header.field.respond_to?(:addrs)
+          header.field.addrs.each do |addr|
+            if addr.domain.to_s.casecmp(domain)==0 && addr.local.to_s =~ /\A#{local}\+([^+]+)\z/
+              if project = Project.find_by_identifier($1)
+                return project
+              end
+            end
+          end
+        end
+        nil
+      end
+
     end # module InstanceMethods
   end # module MailHandlerPatch
 end # module RedmineHelpdesk
