@@ -159,7 +159,7 @@ module RedmineHelpdesk
         # search for project if filled 'helpdesk-sender-email'
         [:to, :cc, :bcc].each do |field|
           header = @email[field]
-          addr_to_text = header.field.addrs.first.local + "@" + header.field.addrs.first.domain
+          addr_to_text = header.field.addrs.first.address
           project = Project.all.select do |p|
             p.custom_value_for(CustomField.find_by_name('helpdesk-sender-email')).to_s.include? (addr_to_text)
           end.first
