@@ -155,15 +155,13 @@ module RedmineHelpdesk
       end
 
       def get_project_from_receiver_addresses_with_patch
-        #((Project.all.select {|p| p.custom_field_values[4].to_s.include? ('@krit.pro') })[7].custom_value_for(CustomField.find_by_name('helpdesk-sender-email'))).value # methods.select { |m| m.to_s.include? ('custom') }
-        #     s = CustomField.find_by_name('helpdesk-sender-email')
-        #     sender = p.custom_value_for(s).try(:value) if p.present? && s.present?
 
         # search for project if filled 'helpdesk-sender-email'
         [:to, :cc, :bcc].each do |field|
           header = @email[field]
+          addr_to_text = header.field.addrs.first.local + "@" + header.field.addrs.first.domain
           project = Project.all.select do |p|
-            p.custom_value_for(CustomField.find_by_name('helpdesk-sender-email')).to_s.include? (header.to_s)
+            p.custom_value_for(CustomField.find_by_name('helpdesk-sender-email')).to_s.include? (addr_to_text)
           end.first
           return project if project
         end
