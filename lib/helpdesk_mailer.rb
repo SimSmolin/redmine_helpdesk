@@ -3,6 +3,8 @@
 # uses this method-name too in their mailer. This is the reason
 # why we need our own Mailer class.
 #
+require "mail/parsers/content_type_parser"
+
 class HelpdeskMailer < ActionMailer::Base
   helper :application
 
@@ -72,7 +74,7 @@ class HelpdeskMailer < ActionMailer::Base
       # or the first reply message
       t = text.present? ? "#{text}\n\n#{footer}" : reply
       mail(
-        :from     => sender.present? && sender || Setting.mail_from,
+        :from     => Setting.mail_from,
         :reply_to => sender.present? && sender || Setting.mail_from,
         :to       => recipient,
         :subject  => subject,
@@ -86,7 +88,7 @@ class HelpdeskMailer < ActionMailer::Base
       @journal = journal
       @issue_url = url_for(:controller => 'issues', :action => 'show', :id => issue)
       mail(
-        :from     => sender.present? && sender || Setting.mail_from,
+        :from     => Setting.mail_from,
         :reply_to => sender.present? && sender || Setting.mail_from,
         :to       => recipient,
         :subject  => subject,

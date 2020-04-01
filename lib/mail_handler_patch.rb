@@ -57,7 +57,7 @@ module RedmineHelpdesk
           # on the first issue.save. So we need to send
           # the notification email to the supportclient
           # on our own.
-          
+
           HelpdeskMailer.email_to_supportclient(issue, {:recipient => sender_email,
               :carbon_copy => carbon_copy} ).deliver
         end
@@ -159,11 +159,13 @@ module RedmineHelpdesk
         # search for project if filled 'helpdesk-sender-email'
         [:to, :cc, :bcc].each do |field|
           header = @email[field]
-          addr_to_text = header.field.addrs.first.address
-          project = Project.all.select do |p|
-            p.custom_value_for(CustomField.find_by_name('helpdesk-sender-email')).to_s.include? (addr_to_text)
-          end.first
-          return project if project
+          if header
+            addr_to_text = header.field.addrs.first.address
+            project = Project.all.select do |p|
+              p.custom_value_for(CustomField.find_by_name('helpdesk-sender-email')).to_s.include? (addr_to_text)
+            end.first
+            return project if project
+          end
         end
 
         local, domain = handler_options[:project_from_subaddress].to_s.split("@")
