@@ -161,7 +161,9 @@ module RedmineHelpdesk
           header = @email[field]
           if header
             addr_to_text = header.field.addrs.first.address
+            logger.info "MailHandler: looking for a project by field#{field.to_s}: #{addr_to_text}"
             project = Project.all.select do |p|
+              logger.info "MailHandler: field 'helpdesk-sender-email' contain #{p.custom_value_for(CustomField.find_by_name('helpdesk-sender-email')).to_s}"
               p.custom_value_for(CustomField.find_by_name('helpdesk-sender-email')).to_s.include? (addr_to_text)
             end.first
             return project if project
