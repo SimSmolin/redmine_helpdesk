@@ -50,7 +50,7 @@ module RedmineHelpdesk
           custom_value = CustomValue.where(
             "customized_id = ? AND custom_field_id = ?", issue.id, custom_field.id).
             first
-          custom_value.value = sender_email
+          custom_value.value = sender_email if custom_value
           custom_value.save(:validate => false) # skip validation!
           
           # regular email sending to known users is done
@@ -160,13 +160,16 @@ module RedmineHelpdesk
         [:to, :cc, :bcc].each do |field|
           header = @email[field]
           if header
-            addr_to_text = header.field.addrs.first.address
-            logger.info "MailHandler: looking for a project by field#{field.to_s}: #{addr_to_text}"
-            project = Project.all.select do |p|
-              logger.info "MailHandler: field 'helpdesk-sender-email' contain #{p.custom_value_for(CustomField.find_by_name('helpdesk-sender-email')).to_s}"
-              p.custom_value_for(CustomField.find_by_name('helpdesk-sender-email')).to_s.include? (addr_to_text)
-            end.first
-            return project if project
+            header.field.addrs.each { |addr| # когда много адресов через ,
+              addr_to_text = addr.address
+              logger.info "MailHandler: looking for a project by field #{field.to_s}: #{addr_to_text}"
+              project = Project.all.select do |p|
+                helpdesk_sender_email = p.custom_value_for(CustomField.find_by_name('helpdesk-sender-email')).to_s
+                logger.info "MailHandler: field 'helpdesk-sender-email' contain #{helpdesk_sender_email}" if helpdesk_sender_email.present?
+                helpdesk_sender_email.include? (addr_to_text)
+              end.first
+              return project if project
+            }
           end
         end
 
