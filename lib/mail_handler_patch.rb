@@ -110,6 +110,7 @@ module RedmineHelpdesk
 
         # add To and Cc as watchers before saving so the watchers can reply to Redmine
         add_watchers(issue)
+        issue.validate
         #Setting.plugin_time_entry_custom_field_addons['period_close_date']
         issue.save!(:validate => Setting.plugin_redmine_helpdesk['cf_required_disable']!="1")
         add_attachments(issue)
